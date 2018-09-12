@@ -1,0 +1,17 @@
+#lang racket
+(provide (all-defined-out))
+
+(define (cube x)
+  (* x x x))
+(define (inc x)
+  (+ x 1))
+(define (average x y)
+  (/ (+ x y) 2))
+(define (square n)
+  (* n n))
+(define (even? n)
+  (= (remainder n 2) 0))
+(define (fast-expr b n)
+  (cond ((= n 0) 1)
+        ((even? n) (square (fast-expr b (/ n 2))))
+        (else (* b (fast-expr b (- n 1))))))
