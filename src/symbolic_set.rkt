@@ -95,3 +95,26 @@
                            (make-leaf-set (cdr pairs))))))
 ;(list (list 'A 4) (list 'C 1) (list 'B 2) (list 'D 1))
 ;'((A 4) (C 1) (B 2) (D 1))
+;2.68
+(define (encode-symbol symbol tree)
+  (cond ((element-of-set? symbol (symbols (left-branch tree)))
+         (if (leaf? (left-branch tree))
+             '(0)
+             (append '(0) (encode-symbol symbol (left-branch tree)))))
+        ((element-of-set? symbol (symbols (right-branch tree)))
+         (if (leaf? (right-branch tree))
+             '(1)
+             (append '(1) (encode-symbol symbol (right-branch tree)))))
+        (else (error "not in tree" symbol))))
+(define (encode message tree)
+  (if (null? message)
+      '()
+      (append (encode-symbol (car message ) tree)
+              (encode (cdr message) tree))))
+
+(define sample-tree
+  (make-code-tree (make-leaf 'A 4)
+                  (make-code-tree
+                   (make-leaf 'B 2)
+                   (make-code-tree (make-leaf 'D 1)
+                                   (make-leaf 'C 1)))))
