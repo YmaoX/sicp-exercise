@@ -99,22 +99,34 @@
 (define (encode-symbol symbol tree)
   (cond ((element-of-set? symbol (symbols (left-branch tree)))
          (if (leaf? (left-branch tree))
-             '(0)
-             (append '(0) (encode-symbol symbol (left-branch tree)))))
+             (cons 0 '())
+             (cons 0 (encode-symbol symbol (left-branch tree)))))
         ((element-of-set? symbol (symbols (right-branch tree)))
          (if (leaf? (right-branch tree))
-             '(1)
-             (append '(1) (encode-symbol symbol (right-branch tree)))))
+             (cons 1 '())
+             (cons 1 (encode-symbol symbol (right-branch tree)))))
         (else (error "not in tree" symbol))))
 (define (encode message tree)
   (if (null? message)
       '()
       (append (encode-symbol (car message ) tree)
               (encode (cdr message) tree))))
-
+;tree for test
 (define sample-tree
   (make-code-tree (make-leaf 'A 4)
                   (make-code-tree
                    (make-leaf 'B 2)
                    (make-code-tree (make-leaf 'D 1)
                                    (make-leaf 'C 1)))))
+;2.69
+(define (successive-merge set)
+  (cond ((null? set) '())
+        ((null? (cdr set)) set)
+        ((null? (cddr set)) (make-code-tree (car set) (cadr set)))
+        (else (successive-merge
+               (adjoin-weight-set
+                (make-code-tree (car set) (cadr set))
+                (cddr set))))))
+
+(define (generate-huffman-tree pairs)
+  (successive-merge (make-leaf-set pairs)))
